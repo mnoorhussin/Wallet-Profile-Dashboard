@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import { ConnectButton } from '@/components/ConnectButton'
 import { Dashboard } from '@/components/Dashboard'
+import { DarkModeToggle } from '@/components/DarkModeToggle'
 
 export default function Home() {
   const { isConnected } = useAccount()
@@ -29,9 +30,12 @@ export default function Home() {
 
   return (
     <main className="container">
-      <div className="hero">
-        <h1>🔐 Wallet Dashboard</h1>
-        <p>Connect your wallet to view your profile</p>
+      <div className="flex justify-between items-start mb-8">
+        <div className="hero">
+          <h1>🔐 Wallet Dashboard</h1>
+          <p>Connect your wallet to view your profile</p>
+        </div>
+        <DarkModeToggle />
       </div>
 
       {!isConnected ? (

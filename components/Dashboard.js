@@ -8,6 +8,10 @@ import {
     useSignMessage
 } from 'wagmi'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { Tabs } from '@/components/Tabs'
+import { TransactionHistory } from '@/components/TransactionHistory'
+import { PortfolioTracker } from '@/components/PortfolioTracker'
+import { NFTGallery } from '@/components/NFTGallery'
 
 export function Dashboard() {
     const { address, chain, isConnected } = useAccount()
@@ -105,6 +109,69 @@ export function Dashboard() {
         ? `${parseFloat(balance.formatted).toFixed(4)} ${balance.symbol}`
         : 'Loading...'
 
+    const tabs = [
+        {
+            id: 'overview',
+            label: '📊 Overview',
+            content: (
+                <div>
+                    <div className="profile-card">
+                        <div className="info-row">
+                            <span className="label">📍 Address</span>
+                            <span className="value">{shortAddress}</span>
+                            <button
+                                onClick={() => navigator.clipboard.writeText(address)}
+                                className="copy-btn"
+                            >
+                                📋
+                            </button>
+                        </div>
+
+                        <div className="info-row">
+                            <span className="label">🌐 Network</span>
+                            <span className="value network-badge">
+                                {chain?.name || 'Unknown'}
+                            </span>
+                        </div>
+
+                        <div className="info-row">
+                            <span className="label">💰 Balance</span>
+                            <span className="value balance">{formattedBalance}</span>
+                        </div>
+
+                        {lastLogin && (
+                            <div className="info-row">
+                                <span className="label">🕐 Last Login</span>
+                                <span className="value">
+                                    {new Date(lastLogin).toLocaleString()}
+                                </span>
+                            </div>
+                        )}
+
+                        {loginCount > 0 && (
+                            <div className="info-row">
+                                <span className="label">🔢 Total Logins</span>
+                                <span className="value">{loginCount}</span>
+                            </div>
+                        )}
+                    </div>
+
+                    <PortfolioTracker />
+                </div>
+            )
+        },
+        {
+            id: 'transactions',
+            label: '💸 Transactions',
+            content: <TransactionHistory />
+        },
+        {
+            id: 'nfts',
+            label: '🎨 NFTs',
+            content: <NFTGallery />
+        }
+    ]
+
     return (
         <div className="dashboard">
             <div className="dashboard-header">
@@ -127,46 +194,7 @@ export function Dashboard() {
                 </div>
             )}
 
-            <div className="profile-card">
-                <div className="info-row">
-                    <span className="label">📍 Address</span>
-                    <span className="value">{shortAddress}</span>
-                    <button
-                        onClick={() => navigator.clipboard.writeText(address)}
-                        className="copy-btn"
-                    >
-                        📋
-                    </button>
-                </div>
-
-                <div className="info-row">
-                    <span className="label">🌐 Network</span>
-                    <span className="value network-badge">
-                        {chain?.name || 'Unknown'}
-                    </span>
-                </div>
-
-                <div className="info-row">
-                    <span className="label">💰 Balance</span>
-                    <span className="value balance">{formattedBalance}</span>
-                </div>
-
-                {lastLogin && (
-                    <div className="info-row">
-                        <span className="label">🕐 Last Login</span>
-                        <span className="value">
-                            {new Date(lastLogin).toLocaleString()}
-                        </span>
-                    </div>
-                )}
-
-                {loginCount > 0 && (
-                    <div className="info-row">
-                        <span className="label">🔢 Total Logins</span>
-                        <span className="value">{loginCount}</span>
-                    </div>
-                )}
-            </div>
+            <Tabs tabs={tabs} />
 
             <button onClick={() => disconnect()} className="disconnect-btn">
                 🚪 Disconnect Wallet
